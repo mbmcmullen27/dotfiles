@@ -6,7 +6,8 @@ export TERMINAL=alacritty
 export EDITOR=vim
 
 # Bash Completions
-source ~/.git-prompt.sh
+source /usr/share/git/completion/git-prompt.sh
+source /usr/share/git/completion/git-completion.bash
 source /usr/share/bash-completion/completions/git
 
 source <(kubectl completion bash) 
