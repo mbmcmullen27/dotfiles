@@ -1,32 +1,66 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+# Environment Vars
 export TERMINAL=alacritty
 export EDITOR=vim
 
+# Bash Completions
 source ~/.git-prompt.sh
 source /usr/share/bash-completion/completions/git
 
-PS1='[\u: \W]$(__git_ps1 " ⇵ %s")\n$'
+source <(kubectl completion bash) 
+complete -F __start_kubectl k  
+ 
+export NVM_DIR="$HOME/.nvm" 
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm 
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion 
 
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+LGREEN='\033[1;32m'
+PURPLE='\033[0;35m'
+LPURPLE='\033[1;35m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+LBLUE='\033[1;34m'
+NC='\033[0m'
+
+# Prompt
+PS1="\[$LGREEN\][\u: \[$LBLUE\]\W\[$LGREEN\]]\[$YELLOW\]\$(__git_ps1)\[$NC\]\n\$ "
+
+# Aliases
+alias d=docker
+alias k=kubectl
+alias wd=work-dir
+alias tf=terraform
 alias ls='ls --color=auto'
 alias battery='cat /sys/class/power_supply/BAT0/capacity'
-alias mflop='sudo mount /dev/sdb /media/floppy'
-alias uflop='sudo umount /media/floppy'
-alias k='kubectl'
-alias d='docker'
 alias ope='sudo "$BASH" -c "$(history -p !!)"'
 
-if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR:-0}" -eq 1 ]; then
-  exec startx
-fi
+# Functions
+function work-dir() {
+  if [ $# -eq 0 ]; then
+    echo -e "${LPURPLE}Available Working Directories:$NC"
+    find $HOME/git/ -maxdepth 1 -printf "- %f\n" -type d | tail -n +2
+  else
+    herbstclient rule once monitor=1
+    code ~/git/$1
+    herbstclient set_layout max
+    qutebrowser github.com/mbmcmullen27/$1
+    herbstclient focus r
+  fi
+}
 
-function opp() {
-  herbstclient rule once monitor=1
-  code ~/git/$1
-  herbstclient set_layout max
-  qutebrowser github.com/mbmcmullen27/$1
-  herbstclient focus r
+function kubefig () {
+  if [ $# -eq 0 ]; then
+    echo -e "${LPURPLE}Available Configs:$NC"
+    ls -l ~/.kube | awk '{print "- "$9}' | tail -n +3
+  else
+    cp ~/.kube/$1 ~/.kube/config
+    echo -e "${GREEN}copied ~/.kube/$1 to ~/.kube/config$NC"
+  fi
 }
 
 function docker-mem () {
@@ -46,10 +80,10 @@ function docker-mem () {
   let "total = $gbs + $gbsum"
   echo "${mbsum}MB"
   echo "${gbsum}GB"
-  echo "total: ~${total}GB"
+  echo -e "${LGREEN}total:$NC ~${total}GB"
 }
 
-docker-clean() {
+function docker-clean() {
   echo "Before:"
   docker-mem
 
@@ -70,29 +104,13 @@ docker-clean() {
   docker-mem
 }
 
-alpine () {
-  kubectl run -it --rm alpine-$USER --image=alpine -- /bin/sh
+function curling () {
+  kubectl run -it --rm curl-$USER --image=mcmull27/curls -- /bin/bash
 }
 
-# run gitlab 
-gitlab-start () { 
-  export GITLAB_HOME="/home/mmcmullen/gitlab" 
-  docker run --detach \ 
-    --hostname "gitlab.local.com" \ 
-    --publish 443:443 --publish 80:80 --publish 22:22 \ 
-    --name gitlab \ 
-    --restart always \ 
-    --volume $GITLAB_HOME/config:/etc/gitlab \ 
-    --volume $GITLAB_HOME/logs:/var/log/gitlab \ 
-    --volume $GITLAB_HOME/data:/var/opt/gitlab \ 
-    gitlab/gitlab-ee:latest 
-} 
-
-source <(kubectl completion bash) 
-complete -F __start_kubectl k  
- 
-export NVM_DIR="$HOME/.nvm" 
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm 
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion 
+# Start X Server
+if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR:-0}" -eq 1 ]; then
+  exec startx
+fi
 
 cat ~/blinky
