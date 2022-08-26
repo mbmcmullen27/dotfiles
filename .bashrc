@@ -85,7 +85,7 @@ function docker-mem () {
 }
 
 function docker-clean() {
-  echo "Before:"
+  echo -e "${LPURPLE}Before:"
   docker-mem
 
   pattern="^<none>.*$"
@@ -101,7 +101,7 @@ function docker-clean() {
     docker rmi -f $i;
   done
 
-  echo -e "\nAfter:"
+  echo -e "\n${LPURPLE}After:"
   docker-mem
 }
 
