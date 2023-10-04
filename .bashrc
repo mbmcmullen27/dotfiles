@@ -50,11 +50,20 @@ alias timecard='. /home/mmcmullen/git/misc/ibm-time/w3_creds && ibm-time'
 alias new-express='npx express-generator myExpressApp --view ejs'
 
 
+# Functions
 function bake () { 
   ( cd ~/git/$(cat ~/.project) && make $1 )
 }
 
-# Functions
+function client-workdir () { 
+    if [ $# -eq 0 ]; then
+        echo -e "${LPURPLE}Available Working Directories:$NC";
+        find /home/mmcmullen/git/ -maxdepth 1 -printf "- %f\n" -type d | tail -n +2;
+    else
+        cd /home/mmcmullen/git/$1;
+    fi
+}
+
 function work-dir() {
   if [ $# -eq 0 ]; then
     echo -e "${LPURPLE}Available Working Directories:$NC"
