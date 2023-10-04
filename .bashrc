@@ -119,7 +119,7 @@ function docker-clean() {
   docker-mem
 }
 
-set-workdir () { 
+function set-workdir () { 
   pwd | awk -F'git/' '{print $2}' > ~/.project
 }
 
