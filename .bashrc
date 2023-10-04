@@ -47,7 +47,6 @@ alias emu-push='git -c core.sshCommand="ssh -i ~/.ssh/ghe_id_rsa" push'
 alias ibvm='qemu-system-x86_64 -cpu host -smp cores=4 -m 8G -drive file=/home/mmcmullen/ibm/fedora-35.img,format=raw -enable-kvm &'
 alias simple-tracker-vm='ssh azureuser@13.92.57.173 -i ~/.ssh/simple-tracker_key.pem'
 alias timecard='. /home/mmcmullen/git/misc/ibm-time/w3_creds && ibm-time'
-alias new-express='npx express-generator myExpressApp --view ejs'
 
 
 # Functions
@@ -128,7 +127,11 @@ function docker-clean() {
   docker-mem
 }
 
-function set-workdir () { 
+function new-express() {
+  npx express-generator $1 --view ejs
+}
+
+function set-workdir() { 
   pwd | awk -F'git/' '{print $2}' > ~/.project
 }
 
