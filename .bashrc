@@ -32,13 +32,27 @@ NC='\033[0m'
 PS1="\[$LGREEN\][\u: \[$LBLUE\]\W\[$LGREEN\]]\[$YELLOW\]\$(__git_ps1)\[$NC\]\n\$ "
 
 # Aliases
-alias d=docker
-alias k=kubectl
-alias wd=work-dir
-alias tf=terraform
+alias d='docker'
+alias k='kubectl'
+alias tf='terraform'
+alias wd='client-workdir'
 alias ls='ls --color=auto'
-alias battery='cat /sys/class/power_supply/BAT0/capacity'
+alias todo='vim ~/todo.md'
 alias ope='sudo "$BASH" -c "$(history -p !!)"'
+alias client-code='code "$HOME/git/$(cat $HOME/.project)"'
+alias open-client-dir='client-workdir "$(cat ~/.project)" && code .'
+alias emu-clone='git -c core.sshCommand="ssh -i ~/.ssh/ghe_id_rsa" clone'
+alias emu-pull='git -c core.sshCommand="ssh -i ~/.ssh/ghe_id_rsa" pull'
+alias emu-push='git -c core.sshCommand="ssh -i ~/.ssh/ghe_id_rsa" push'
+alias ibvm='qemu-system-x86_64 -cpu host -smp cores=4 -m 8G -drive file=/home/mmcmullen/ibm/fedora-35.img,format=raw -enable-kvm &'
+alias simple-tracker-vm='ssh azureuser@13.92.57.173 -i ~/.ssh/simple-tracker_key.pem'
+alias timecard='. /home/mmcmullen/git/misc/ibm-time/w3_creds && ibm-time'
+alias new-express='npx express-generator myExpressApp --view ejs'
+
+
+function bake () { 
+  ( cd ~/git/$(cat ~/.project) && make $1 )
+}
 
 # Functions
 function work-dir() {
@@ -105,8 +119,8 @@ function docker-clean() {
   docker-mem
 }
 
-function curling () {
-  kubectl run -it --rm curl-$USER --image=mcmull27/curls -- /bin/bash
+set-workdir () { 
+  pwd | awk -F'git/' '{print $2}' > ~/.project
 }
 
 # Start X Server
