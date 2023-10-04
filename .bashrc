@@ -50,6 +50,16 @@ alias timecard='. /home/mmcmullen/git/misc/ibm-time/w3_creds && ibm-time'
 
 
 # Functions
+
+function citrix() { 
+    dup=(~/Downloads/*\(1\).ica);
+    if [ -f "$dup" ]; then
+        rm "$dup";
+    fi;
+    file=(~/Downloads/*.ica);
+    /opt/Citrix/ICAClient/wfica $file
+}
+
 function bake () { 
   ( cd ~/git/$(cat ~/.project) && make $1 )
 }
